@@ -1,142 +1,135 @@
 import React, { useState } from "react";
-import { Container, Form, Button, Alert } from "react-bootstrap";
+import { Formik, Form, Field, ErrorMessage } from "formik";
+import * as Yup from "yup";
+import "bootstrap/dist/css/bootstrap.min.css";
 
-const JobApplicationForm = () => {
+const steps = ["Personal Details", "Work Experience", "Resume Upload", "Review & Submit"];
+
+const MultiStepForm = () => {
+  const [step, setStep] = useState(0);
   const [formData, setFormData] = useState({
-    firstName: "",
-    lastName: "",
-    dob: "",
-    phoneNumber: "",
+    firstname: "",
+    lastname: "",
     email: "",
-    country: "",
+    phone: "",
+    experience: "",
     resume: null,
-    introduction: "",
-    gender: "",
-    source: "",
-    disability: "",
-    maritalStatus: "",
-    consent: false,
-    error: "",
-    success: false,
   });
+  const [loading, setLoading] = useState(false);
+  const [successMessage, setSuccessMessage] = useState(null);
 
-  const handleChange = (e) => {
-    const { name, value, type, checked } = e.target;
-    setFormData({
-      ...formData,
-      [name]: type === "checkbox" ? checked : value,
-    });
+  const validationSchema = [
+    Yup.object({
+      firstname: Yup.string().required("Required"),
+      lastname: Yup.string().required("Required"),
+      email: Yup.string().email("Invalid email").required("Required"),
+      phone: Yup.string().required("Required"),
+    }),
+    Yup.object({
+      experience: Yup.string().required("Required"),
+    }),
+    Yup.object({
+      resume: Yup.mixed().required("Resume is required"),
+    }),
+  ];
+
+  const handleNext = (values) => {
+    setFormData({ ...formData, ...values });
+    setStep(step + 1);
   };
 
-  const handleFileChange = (e) => {
-    setFormData({ ...formData, resume: e.target.files[0] });
+  const handlePrev = () => {
+    setStep(step - 1);
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    if (!formData.consent) {
-      setFormData({ ...formData, error: "Check the consent box to submit" });
-      return;
-    }
-    setFormData({ ...formData, error: "", success: true });
+  const handleSubmit = (values) => {
+    setLoading(true);
+    setTimeout(() => {
+      setLoading(false);
+      setSuccessMessage("Application submitted successfully!");
+    }, 2000);
   };
 
   return (
-    <Container className="mt-5">
-      <h2 className="text-center">Job Application Form</h2>
-      {formData.error && <Alert variant="danger">{formData.error}</Alert>}
-      {formData.success && (
-        <Alert variant="success">
-          You have successfully submitted your application. Thanks! We will get
-          back to you as soon as possible.
-        </Alert>
-      )}
-      <Form onSubmit={handleSubmit}>
-        <Form.Group>
-          <Form.Label>First Name</Form.Label>
-          <Form.Control
-            type="text"
-            name="firstName"
-            value={formData.firstName}
-            onChange={handleChange}
-            required
-          />
-        </Form.Group>
-        <Form.Group>
-          <Form.Label>Last Name</Form.Label>
-          <Form.Control
-            type="text"
-            name="lastName"
-            value={formData.lastName}
-            onChange={handleChange}
-            required
-          />
-        </Form.Group>
-        <Form.Group>
-          <Form.Label>Date of Birth</Form.Label>
-          <Form.Control
-            type="date"
-            name="dob"
-            value={formData.dob}
-            onChange={handleChange}
-            required
-          />
-        </Form.Group>
-        <Form.Group>
-          <Form.Label>Phone Number</Form.Label>
-          <Form.Control
-            type="tel"
-            name="phoneNumber"
-            value={formData.phoneNumber}
-            onChange={handleChange}
-            required
-          />
-        </Form.Group>
-        <Form.Group>
-          <Form.Label>Email Address</Form.Label>
-          <Form.Control
-            type="email"
-            name="email"
-            value={formData.email}
-            onChange={handleChange}
-            required
-          />
-        </Form.Group>
-        <Form.Group>
-          <Form.Label>Country</Form.Label>
-          <Form.Control
-            as="select"
-            name="country"
-            value={formData.country}
-            onChange={handleChange}
-            required
-          >
-            <option value="">Select Country</option>
-            <option value="USA">USA</option>
-            <option value="UK">UK</option>
-            <option value="Kenya">Kenya</option>
-          </Form.Control>
-        </Form.Group>
-        <Form.Group>
-          <Form.Label>Attach Resume</Form.Label>
-          <Form.Control type="file" onChange={handleFileChange} required />
-        </Form.Group>
-        <Form.Group>
-          <Form.Check
-            type="checkbox"
-            label="Allow us to process your personal information"
-            name="consent"
-            checked={formData.consent}
-            onChange={handleChange}
-            required
-          />
-        </Form.Group>
-        <Button type="submit" variant="primary">
-          Submit Application
-        </Button>
-      </Form>
-    </Container>
+    <div className="container mt-5" style={{ fontFamily: "Roboto", maxWidth: "600px" }}>
+      <h2 className="text-primary">{steps[step]}</h2>
+      <Formik
+        initialValues={formData}
+        validationSchema={validationSchema[step]}
+        onSubmit={step === steps.length - 1 ? handleSubmit : handleNext}
+      >
+        {({ setFieldValue }) => (
+          <Form>
+            {step === 0 && (
+              <>
+                <div className="mb-3">
+                  <label>First Name</label>
+                  <Field name="firstname" className="form-control" />
+                  <ErrorMessage name="name" component="div" className="text-danger" />
+                </div>
+                <div className="mb-3">
+                  <label>Last Name</label>
+                  <Field name="lastname" className="form-control" />
+                  <ErrorMessage name="name" component="div" className="text-danger" />
+                </div>
+                <div className="mb-3">
+                  <label>Email</label>
+                  <Field name="email" type="email" className="form-control" />
+                  <ErrorMessage name="email" component="div" className="text-danger" />
+                </div>
+                <div className="mb-3">
+                  <label>Phone</label>
+                  <Field name="phone" className="form-control" />
+                  <ErrorMessage name="phone" component="div" className="text-danger" />
+                </div>
+              </>
+            )}
+            {step === 1 && (
+              <div className="mb-3">
+                <label>Work Experience</label>
+                <Field name="experience" className="form-control" />
+                <ErrorMessage name="experience" component="div" className="text-danger" />
+              </div>
+            )}
+            {step === 2 && (
+              <div className="mb-3">
+                <label>Resume Upload</label>
+                <input
+                  type="file"
+                  className="form-control"
+                  onChange={(event) => setFieldValue("resume", event.currentTarget.files[0])}
+                />
+                <ErrorMessage name="resume" component="div" className="text-danger" />
+              </div>
+            )}
+            {step === 3 && (
+              <div>
+                <h4>Review Your Details</h4>
+                <p><strong>First Name:</strong> {formData.name}</p>
+                <p><strong>Last Name:</strong> {formData.name}</p>
+                <p><strong>Email:</strong> {formData.email}</p>
+                <p><strong>Phone:</strong> {formData.phone}</p>
+                <p><strong>Experience:</strong> {formData.experience}</p>
+                <p><strong>Resume:</strong> {formData.resume?.name || "Not uploaded"}</p>
+              </div>
+            )}
+            <div className="d-flex justify-content-between mt-4">
+              {step > 0 && (
+                <button type="button" className="btn btn-secondary" onClick={handlePrev}>
+                  Back
+                </button>
+              )}
+              <button type="submit" className="btn btn-primary">
+                {step === steps.length - 1 ? "Submit" : "Next"}
+              </button>
+            </div>
+          </Form>
+        )}
+      </Formik>
+      {loading && <div className="mt-3 text-primary">Submitting...</div>}
+      {successMessage && <div className="mt-3 text-success">{successMessage}</div>}
+    </div>
   );
 };
 
-export default JobApplicationForm;
+export default MultiStepForm;
