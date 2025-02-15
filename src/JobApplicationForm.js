@@ -43,7 +43,7 @@ const JobApplicationForm = () => {
 
   return (
     <Container className="mt-5">
-      <h2 className="text-center">Job Application</h2>
+      <h2 className="text-center">Job Application Form</h2>
       {formData.error && <Alert variant="danger">{formData.error}</Alert>}
       {formData.success && (
         <Alert variant="success">
