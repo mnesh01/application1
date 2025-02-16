@@ -3,7 +3,7 @@ import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
 import "bootstrap/dist/css/bootstrap.min.css";
 
-const steps = ["Personal Details", "Work Experience", "Resume Upload", "Review & Submit"];
+const steps = ["Personal Details", "Profile", "Review & Submit"];
 
 const MultiStepForm = () => {
   const [step, setStep] = useState(0);
@@ -12,8 +12,9 @@ const MultiStepForm = () => {
     lastname: "",
     email: "",
     phone: "",
-    experience: "",
+    gender: "",
     resume: null,
+    psummary: "",
   });
   const [loading, setLoading] = useState(false);
   const [successMessage, setSuccessMessage] = useState(null);
@@ -24,12 +25,14 @@ const MultiStepForm = () => {
       lastname: Yup.string().required("Required"),
       email: Yup.string().email("Invalid email").required("Required"),
       phone: Yup.string().required("Required"),
-    }),
-    Yup.object({
-      experience: Yup.string().required("Required"),
+      gender: Yup.string().required("Select a gender")
+
     }),
     Yup.object({
       resume: Yup.mixed().required("Resume is required"),
+    }),
+    Yup.object({
+      psummary: Yup.string().required("Required"),
     }),
   ];
 
@@ -82,17 +85,21 @@ const MultiStepForm = () => {
                   <Field name="phone" className="form-control" />
                   <ErrorMessage name="phone" component="div" className="text-danger" />
                 </div>
+                <div className="mb-3">
+                    <label>Gender</label>
+                    <Field as="select" name="gender" className="form-control">
+                     <option value="">Select Gender</option>
+                    <option value="male">Male</option>
+                    <option value="female">Female</option>
+                    <option value="other">Other</option>
+            </Field>
+            <ErrorMessage name="gender" component="div" className="text-danger" />
+          </div>
               </>
             )}
             {step === 1 && (
-              <div className="mb-3">
-                <label>Work Experience</label>
-                <Field name="experience" className="form-control" />
-                <ErrorMessage name="experience" component="div" className="text-danger" />
-              </div>
-            )}
-            {step === 2 && (
-              <div className="mb-3">
+               <>
+               <div className="mb-3">
                 <label>Resume Upload</label>
                 <input
                   type="file"
@@ -101,16 +108,23 @@ const MultiStepForm = () => {
                 />
                 <ErrorMessage name="resume" component="div" className="text-danger" />
               </div>
+              <div className="mb-3">
+                <label>Personal summary</label>
+                <Field name="psummary" className="form-control" />
+                <ErrorMessage name="experience" component="div" className="text-danger" />
+              </div>
+              </>  
             )}
-            {step === 3 && (
+            {step === 2 && (
               <div>
                 <h4>Review Your Details</h4>
-                <p><strong>First Name:</strong> {formData.name}</p>
-                <p><strong>Last Name:</strong> {formData.name}</p>
+                <p><strong>First Name:</strong> {formData.firstname}</p>
+                <p><strong>Last Name:</strong> {formData.lastname}</p>
                 <p><strong>Email:</strong> {formData.email}</p>
                 <p><strong>Phone:</strong> {formData.phone}</p>
-                <p><strong>Experience:</strong> {formData.experience}</p>
+                <p><strong>Gender:</strong> {formData.gender}</p>
                 <p><strong>Resume:</strong> {formData.resume?.name || "Not uploaded"}</p>
+                <p><strong>Personal summary:</strong> {formData.psummary}</p>
               </div>
             )}
             <div className="d-flex justify-content-between mt-4">
