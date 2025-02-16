@@ -15,6 +15,7 @@ const MultiStepForm = () => {
     gender: "",
     resume: null,
     psummary: "",
+    hearposition: "",
   });
   const [loading, setLoading] = useState(false);
   const [successMessage, setSuccessMessage] = useState(null);
@@ -34,6 +35,9 @@ const MultiStepForm = () => {
     Yup.object({
       psummary: Yup.string().required("Required"),
     }),
+    Yup.object({
+      hearposition: Yup.string().required("Required"),
+      })
   ];
 
   const handleNext = (values) => {
@@ -113,6 +117,18 @@ const MultiStepForm = () => {
                 <Field name="psummary" className="form-control" />
                 <ErrorMessage name="experience" component="div" className="text-danger" />
               </div>
+              <div className="mb-3">
+                    <label>How did you hear about us</label>
+                    <Field as="select" name="hearposition" className="form-control">
+                     <option value="">Select option</option>
+                    <option value="linkedin">Linkedin</option>
+                    <option value="boards">Job boards</option>
+                    <option value="website">Career website</option>
+                    <option value="referall">Referall</option>
+                    <option value="others">Others</option>
+                    </Field>
+                    <ErrorMessage name="hearposition" component="div" className="text-danger" />
+              </div>
               </>  
             )}
             {step === 2 && (
@@ -125,6 +141,7 @@ const MultiStepForm = () => {
                 <p><strong>Gender:</strong> {formData.gender}</p>
                 <p><strong>Resume:</strong> {formData.resume?.name || "Not uploaded"}</p>
                 <p><strong>Personal summary:</strong> {formData.psummary}</p>
+                <p><strong>Hear about us:</strong> {formData.hearposition}</p>
               </div>
             )}
             <div className="d-flex justify-content-between mt-4">
