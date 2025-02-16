@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
 import "bootstrap/dist/css/bootstrap.min.css";
+import { useNavigate } from "react-router-dom";
 
 const steps = ["Personal Details", "Profile", "Review & Submit"];
 
@@ -18,7 +19,8 @@ const MultiStepForm = () => {
     hearposition: "",
   });
   const [loading, setLoading] = useState(false);
-  const [successMessage, setSuccessMessage] = useState(null);
+  
+  const navigate = useNavigate(); // Initialize navigate
 
   const validationSchema = [
     Yup.object({
@@ -26,8 +28,7 @@ const MultiStepForm = () => {
       lastname: Yup.string().required("Required"),
       email: Yup.string().email("Invalid email").required("Required"),
       phone: Yup.string().required("Required"),
-      gender: Yup.string().required("Select a gender")
-
+      gender: Yup.string().required("Select a gender"),
     }),
     Yup.object({
       resume: Yup.mixed().required("Resume is required"),
@@ -37,7 +38,7 @@ const MultiStepForm = () => {
     }),
     Yup.object({
       hearposition: Yup.string().required("Required"),
-      })
+    }),
   ];
 
   const handleNext = (values) => {
@@ -53,7 +54,7 @@ const MultiStepForm = () => {
     setLoading(true);
     setTimeout(() => {
       setLoading(false);
-      setSuccessMessage("Application submitted successfully!");
+      navigate("/success"); 
     }, 2000);
   };
 
@@ -72,12 +73,12 @@ const MultiStepForm = () => {
                 <div className="mb-3">
                   <label>First Name</label>
                   <Field name="firstname" className="form-control" />
-                  <ErrorMessage name="name" component="div" className="text-danger" />
+                  <ErrorMessage name="firstname" component="div" className="text-danger" />
                 </div>
                 <div className="mb-3">
                   <label>Last Name</label>
                   <Field name="lastname" className="form-control" />
-                  <ErrorMessage name="name" component="div" className="text-danger" />
+                  <ErrorMessage name="lastname" component="div" className="text-danger" />
                 </div>
                 <div className="mb-3">
                   <label>Email</label>
@@ -90,46 +91,46 @@ const MultiStepForm = () => {
                   <ErrorMessage name="phone" component="div" className="text-danger" />
                 </div>
                 <div className="mb-3">
-                    <label>Gender</label>
-                    <Field as="select" name="gender" className="form-control">
-                     <option value="">Select Gender</option>
+                  <label>Gender</label>
+                  <Field as="select" name="gender" className="form-control">
+                    <option value="">Select Gender</option>
                     <option value="male">Male</option>
                     <option value="female">Female</option>
                     <option value="other">Other</option>
-            </Field>
-            <ErrorMessage name="gender" component="div" className="text-danger" />
-          </div>
+                  </Field>
+                  <ErrorMessage name="gender" component="div" className="text-danger" />
+                </div>
               </>
             )}
             {step === 1 && (
-               <>
-               <div className="mb-3">
-                <label>Resume Upload</label>
-                <input
-                  type="file"
-                  className="form-control"
-                  onChange={(event) => setFieldValue("resume", event.currentTarget.files[0])}
-                />
-                <ErrorMessage name="resume" component="div" className="text-danger" />
-              </div>
-              <div className="mb-3">
-                <label>Personal summary</label>
-                <Field name="psummary" className="form-control" />
-                <ErrorMessage name="experience" component="div" className="text-danger" />
-              </div>
-              <div className="mb-3">
-                    <label>How did you hear about us</label>
-                    <Field as="select" name="hearposition" className="form-control">
-                     <option value="">Select option</option>
-                    <option value="linkedin">Linkedin</option>
+              <>
+                <div className="mb-3">
+                  <label>Resume Upload</label>
+                  <input
+                    type="file"
+                    className="form-control"
+                    onChange={(event) => setFieldValue("resume", event.currentTarget.files[0])}
+                  />
+                  <ErrorMessage name="resume" component="div" className="text-danger" />
+                </div>
+                <div className="mb-3">
+                  <label>Personal summary</label>
+                  <Field name="psummary" className="form-control" />
+                  <ErrorMessage name="psummary" component="div" className="text-danger" />
+                </div>
+                <div className="mb-3">
+                  <label>How did you hear about us</label>
+                  <Field as="select" name="hearposition" className="form-control">
+                    <option value="">Select option</option>
+                    <option value="linkedin">LinkedIn</option>
                     <option value="boards">Job boards</option>
                     <option value="website">Career website</option>
-                    <option value="referall">Referall</option>
+                    <option value="referall">Referral</option>
                     <option value="others">Others</option>
-                    </Field>
-                    <ErrorMessage name="hearposition" component="div" className="text-danger" />
-              </div>
-              </>  
+                  </Field>
+                  <ErrorMessage name="hearposition" component="div" className="text-danger" />
+                </div>
+              </>
             )}
             {step === 2 && (
               <div>
@@ -141,7 +142,7 @@ const MultiStepForm = () => {
                 <p><strong>Gender:</strong> {formData.gender}</p>
                 <p><strong>Resume:</strong> {formData.resume?.name || "Not uploaded"}</p>
                 <p><strong>Personal summary:</strong> {formData.psummary}</p>
-                <p><strong>Hear about us:</strong> {formData.hearposition}</p>
+                <p><strong>How did you hear about us:</strong> {formData.hearposition}</p>
               </div>
             )}
             <div className="d-flex justify-content-between mt-4">
@@ -158,7 +159,6 @@ const MultiStepForm = () => {
         )}
       </Formik>
       {loading && <div className="mt-3 text-primary">Submitting...</div>}
-      {successMessage && <div className="mt-3 text-success">{successMessage}</div>}
     </div>
   );
 };
